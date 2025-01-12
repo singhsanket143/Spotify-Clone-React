@@ -1,7 +1,4 @@
-import { useEffect, useRef, useState } from "react";
 import ReactHowler from "react-howler";
-import Audio1 from '../../assets/1.mp3';
-import Audio2 from '../../assets/2.mp3';
 
 import {
     MdShuffle,
@@ -12,44 +9,24 @@ import {
     MdOutlineRepeat
 
 } from "react-icons/md";
+import { formatTime } from "../../../utils/timeFormatter";
+import { useEffect } from "react";
 
-export const PlayerController = () => {
-    const songs = [
-        {
-            id: 1,
-            name: "Song 1",
-            artist: {
-                name: "Artist 1",
-                image: "https://robohash.org/artist1"
-            },
-            url: Audio1
-        },
-        {
-            id: 2,
-            name: "Song 2",
-            artist: {
-                name: "Artist 2",
-                image: "https://robohash.org/artist2"
-            },
-            url: Audio2
-        }
-    ]
+export const PlayerController = ({
+    playerState,
+    setPlayerState,
+    soundRef,
+    songs,
+    handleSongLoad,
+    handleSeek,
+    handleShuffle,
+    nextSong,
+    prevSong
+}) => {
 
-    const soundRef = useRef(null);
-
-    const [playerState, setPlayerState] = useState({
-        playing: true,
-        index: 0,
-        seek: 0.0,
-        isSeeking: false,
-        repeat: false,
-        shuffle: false,
-        duration: 0.0
-    });
-
-    useEffect(() => {
-        console.log(songs[playerState.index].url);
-    }, [playerState.index]);
+    useEffect(() => {  
+        console.log(playerState)
+    }, [playerState]);
 
     return (
         <div
@@ -60,16 +37,19 @@ export const PlayerController = () => {
                 ref={soundRef}
                 src={songs[playerState.index].url}
                 playing={playerState.playing}
+                onLoad={handleSongLoad}
             />
             <div
                 className="flex justify-center items-center space-x-4 py-4 text-gray-400"
             >
                 <button
                     className="text-xl text-white"
+                    onClick={handleShuffle}
                 >
                     <MdShuffle />
                 </button>
                 <button
+                    onClick={prevSong}
                     className="text-2xl"
                 >
                     <MdSkipPrevious />
@@ -93,6 +73,7 @@ export const PlayerController = () => {
                 }
                 <button
                     className="text-2xl"
+                    onClick={nextSong}
                 >
                     <MdSkipNext />
                 </button>
@@ -101,6 +82,37 @@ export const PlayerController = () => {
                 >
                     <MdOutlineRepeat />
                 </button>
+            </div>
+
+
+            {/* Progress bar ui */}
+            <div
+                className="flex items-center justify-center space-x-2 text-xs text-gray-400 px-4"
+            >
+                <div
+                    className="w-10 text-right"
+                >
+                    {formatTime(playerState.seek)}
+                </div>
+
+                <input 
+                    type="range"
+                    className="w-full bg-gray-800 accent-gray-600"
+                    min={"0"}
+                    value={playerState.seek}
+                    max={playerState.duration || 0}
+                    step="0.1"
+                    onChange={handleSeek}
+                    onMouseDown={() => { setPlayerState({ ...playerState, isSeeking: true }) }}
+                    onMouseUp={() => { setPlayerState({ ...playerState, isSeeking: false }) }}
+                />
+
+                <div
+                    className="w-10 text-left"
+                >
+                    {formatTime(playerState.duration)}
+                </div>
+
             </div>
         </div>
     )

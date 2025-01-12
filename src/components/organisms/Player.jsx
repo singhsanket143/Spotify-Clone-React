@@ -1,4 +1,4 @@
-import { PlayerController } from "../molecules/PlayerController"
+import { PlayerControllerContainer } from "../molecules/PlayerController/PlayerControllerContainer"
 
 export const Player = () => {
 
@@ -19,7 +19,7 @@ export const Player = () => {
                     </div>
 
                     <div className="w-2/5">
-                        <PlayerController />
+                        <PlayerControllerContainer />
                     </div>
                 </div>
 
